@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 void C2_b() {
 	char ch;
@@ -909,22 +910,342 @@ void C8_De() {
 	printArray(arr, size);
 }
 
+int findMax(int arr[][5]) {
+	int max = -9999999;
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			if (arr[i][j] > max) {
+				max = arr[i][j];
+			}
+		}
+	}
+	return max;
+}
+
 void C8_Lb() {
+	int arr[5][5] = { {1,2,3,4,5} ,{2,3,5,6,8} ,{12,43,23,64,3} ,{3,56,34,7,9} ,{23,45,64,12,4} };
+	printf("原矩阵为：\n");
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			printf("%d ", arr[i][j]);
+		}
+		printf("\n");
+	}
+	int max = findMax(arr);
+	printf("矩阵最大值为：%d\n", max);
+}
 
+void printMatrix(int matrix[4][4], int rows, int cols) {
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			printf("%d ", matrix[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void transposeMatrix(int matrix[4][4]) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = i + 1; j < 4; j++) {
+			int temp = matrix[i][j];
+			matrix[i][j] = matrix[j][i];
+			matrix[j][i] = temp;
+		}
+	}
+}
+
+
+void C8_Lc() {
+	int matrix[4][4];
+
+	// 用户输入矩阵元素
+	printf("Enter elements of the matrix:\n");
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			scanf_s("%d", &matrix[i][j]);
+		}
+	}
+
+	// 打印原始矩阵
+	printf("Original matrix:\n");
+	printMatrix(matrix, 4, 4);
+
+	// 计算矩阵的转置
+	transposeMatrix(matrix);
+
+	// 打印转置后的矩阵
+	printf("Transposed matrix:\n");
+	printMatrix(matrix, 4, 4);
+}
+
+#define SIZE 4
+
+int board[SIZE][SIZE] = { {1,4,15,7},{8,10,2,11},{14,3,6,13},{12,9,5,0} };
+int moves = 0;
+
+void printBoard() {
+	printf("Moves: %d\n", moves);
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = 0; j < SIZE; j++) {
+			printf("%2d ", board[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+}
+
+int findZero() {
+	for (int i = 0; i < SIZE; i++) {
+		for (int j = 0; j < SIZE; j++) {
+			if (board[i][j] == 0) {
+				return (i * SIZE + j);
+			}
+		}
+	}
+	return -1;
+}
+
+void moveZero(int direction) {
+	int zeroPos = findZero();
+	int zeroRow = zeroPos / SIZE;
+	int zeroCol = zeroPos % SIZE;
+
+	switch (direction) {
+	case 's': // Up
+		if (zeroRow > 0) {
+			int temp = board[zeroRow - 1][zeroCol];
+			board[zeroRow - 1][zeroCol] = board[zeroRow][zeroCol];
+			board[zeroRow][zeroCol] = temp;
+			moves++;
+		}
+		break;
+	case 'w': // Down
+		if (zeroRow < SIZE - 1) {
+			int temp = board[zeroRow + 1][zeroCol];
+			board[zeroRow + 1][zeroCol] = board[zeroRow][zeroCol];
+			board[zeroRow][zeroCol] = temp;
+			moves++;
+		}
+		break;
+	case 'd': // Left
+		if (zeroCol > 0) {
+			int temp = board[zeroRow][zeroCol - 1];
+			board[zeroRow][zeroCol - 1] = board[zeroRow][zeroCol];
+			board[zeroRow][zeroCol] = temp;
+			moves++;
+		}
+		break;
+	case 'a': // Right
+		if (zeroCol < SIZE - 1) {
+			int temp = board[zeroRow][zeroCol + 1];
+			board[zeroRow][zeroCol + 1] = board[zeroRow][zeroCol];
+			board[zeroRow][zeroCol] = temp;
+			moves++;
+		}
+		break;
+	}
 }
 
 void C8_Ld() {
+	//board[SIZE - 1][SIZE - 1] = 0; // Set the bottom-right corner as the empty space
+
+	printBoard();
+
+	char direction;
+	while (1) {
+		printf("Enter move (w/a/s/d) quit(q): ");
+		scanf_s(" %c", &direction);
+
+		if (direction == 'w' || direction == 'a' || direction == 's' || direction == 'd') {
+			moveZero(direction);
+			system("cls");
+			printBoard();
+		}
+		else if (direction == 'q') {
+			printf("You left the game\n");
+			break;
+		}
+		else {
+			printf("Invalid move. Please enter w/a/s/d.\n");
+		}
+		
+		if (board[0][0] == 1 && board[0][1] == 2 && board[0][2] == 3 && board[0][3] == 4
+			&& board[1][0] == 5 && board[1][1] == 6 && board[1][2] == 7 && board[1][3] == 8
+			&& board[2][0] == 9 && board[2][1] == 10 && board[2][2] == 11 && board[2][3] == 12
+			&& board[3][0] == 13 && board[3][1] == 14 && board[3][2] == 15 && board[3][3] == 0) {
+			printf("you win!\n");
+			break;
+		}
+	}
+}
+
+void C9_Dc() {
+	char ch[] = "Workingwith strings isfun";
+	int p = 4;
+	int l = 4;
+	char res[8];
+	for (int i = p-1; i < p + l; i++) {
+		res[i - p+1] = ch[i];
+	}
+	for (int i = 0; i < 4; i++) {
+		printf("%c", res[i]);
+	}
+	printf("\n");
 
 }
 
-void C8_Ld() {
+void C9_Dd() {
+	char ch[] = "12432112";
+	printf("转换前%s\n", ch);
+	int num = 0;
+	int size = sizeof(ch) / sizeof(ch[0]);
+	for (int i = 0; i < size-1; i++) {
+		num *= 10;
+		num += ch[i] - '0';
+	}
+	printf("转换后%d\n", num);
+
+}
+
+// Function to check if a year is leap year or not
+int is_leap(int year) {
+	return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+// Function to print calendar of a given month and year
+void print_calendar(int month, int year) {
+	int days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+	int i, j;
+
+	// Check for leap year
+	if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+		days[1] = 29;
+	}
+
+	printf("%s %d\n", ("Mon\tTue\tWed\tThu\tFri\tSat\tSun"), year);
+
+	// Print the first 'day' number of days of previous month
+	for (i = 0; i <= (day_of_week(year, month) - 1); i++) {
+		printf("\t");
+	}
+
+	// Print the days of the given month
+	for (i = 1; i <= days[month-1]; i++) {
+		printf("%d\t", i);
+		if ((i + day_of_week(year, month) - 1) % 7 == 6) {
+			printf("\n");
+		}
+	}
+
+	// Fill up the rest of the rows with spaces
+	while ((i + day_of_week(year, month) - 1) % 7 != 0) {
+		printf("   ");
+		if ((i + day_of_week(year, month) - 1) % 7 == 6) {
+			printf("\n");
+		}
+		i++;
+	}
+}
+
+// Function to calculate the day of week of a given date
+int day_of_week(int year, int month) {
+	int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+
+	year -= month < 3;
+	return (year + year / 4 - year / 100 + year / 400 + t[month - 1]) % 7;
+}
+
+void C9_Fd() {
+	int month, year;
+
+	printf("Enter month and year(6 2024): ");
+	scanf_s("%d %d", &month, &year);
+
+	print_calendar(month, year);
+}
+
+void C9_Ff() {
+	int month, year;
+
+	printf("Enter month and year(6 2024): ");
+	scanf_s("%d %d", &month, &year);
+
+	print_calendar(month, year);
+
+	while (1) {
+		printf("w(明年同月) s(去年同月) a(下一月) d(上一月) q(退出)\n");
+		char c = ' ';
+		scanf_s(" %c",&c);
+		if (c == 'q') {
+			break;
+		}
+		else if (c == 'w') {
+			year++;
+			print_calendar(month, year);
+		}
+		else if (c == 's') {
+			year--;
+			print_calendar(month, year);
+		}
+		else if (c == 'a') {
+			month++;
+			print_calendar(month, year);
+		}
+		else if (c == 'd') {
+			month--;
+			print_calendar(month, year);
+		}
+		else {
+			printf("非法输入，请重试");
+		}
+	}
+}
+
+#define MAX_WORD_LENGTH 100
+
+
+int C9_Fh() {
+	char text[MAX_WORD_LENGTH * 10]; // 假设文本不会超过1000个单词长度
+	char word[] = "the";
+
+	// 从用户那里获取文本
+	printf("Enter a text: ");
+	char ch = ' ';
+	scanf_s("%c", &ch);
+	fgets(text, sizeof(text), stdin);
+
+	// 移除可能的换行符
+	size_t len = strlen(text);
+	if (len > 0 && text[len - 1] == '\n') {
+		text[len - 1] = '\0';
+	}
+
+	// 计算单词 "the" 出现的次数
+	int sum = 0;
+	for (int i = 0; i < 1000; i++) {
+		if (text[i] == 't') {
+			if (i < 1000 - 3) {
+				if (text[i + 1] == 'h' && text[i + 2] == 'e') {
+					sum++;
+				}
+			}
+		}
+	}
+
+	// 输出结果
+	printf("The word '%s' appears %d times in the text.\n", word, sum);
+
+	return 0;
+}
+
+void C9_Fi() {
 
 }
 
 void main(){
 	int chapter = 0;
 	while (1) {
-		printf("请输入要查看的章节（2-9）,若要退出请选择0\n");
+		printf("请输入要查看的章节（2,3,4,5,8,9）,若要退出请选择0\n");
 		scanf_s("%d", &chapter);
 		char ch = ' ';
 		if (chapter == 0) {
@@ -1216,8 +1537,65 @@ void main(){
 			
 		}
 		else if (chapter == 9) {
+			while (1) {
+				char big = ' ';
+				printf("已选择第九章，请选择大题号（D,F),退出请输入0\n");
+				scanf_s(" %c", &big);
+				if (big == '0') {
+					break;
+				}
+				else if (big == 'D') {
+					while (1) {
+						printf("已选择第八章大题号D，请选择题号（c,d),退出请输入0\n");
+						scanf_s(" %c", &ch);
+						if (ch == '0') {
+							break;
+						}
+						else if (ch == 'c') {
+							printf("已选择题c\n");
+							C9_Dc();
+						}
+						else if (ch == 'd') {
+							printf("已选择题d\n");
+							C9_Dd();
+						}
+						else {
+							printf("非法输入，请重试\n");
+						}
+					}
+				}
+				else if (big == 'F') {
+					while (1) {
+						printf("已选择第八章大题号F，请选择题号（d,f,h,i),退出请输入0\n");
+						scanf_s(" %c", &ch);
+						if (ch == '0') {
+							break;
+						}
+						else if (ch == 'd') {
+							printf("已选择题d\n");
+							C9_Fd();
+						}
+						else if (ch == 'f') {
+							printf("已选择题f\n");
+							C9_Ff();
+						}
+						else if (ch == 'h') {
+							printf("已选择题h\n");
+							C9_Fh();
+						}
+						else if (ch == 'i') {
+							printf("已选择题i\n");
+							C9_Fi();
+						}
+						else {
+							printf("非法输入，请重试\n");
+						}
+					}
+				}
+			}
 
-		}
+
+			}
 		else {
 			printf("非法输入，请重试\n");
 		}

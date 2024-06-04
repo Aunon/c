@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
 void C2_b() {
 	char ch;
@@ -393,7 +395,7 @@ void convertToRoman(int year, char* roman) {
 	while (year > 0) {
 		while (year >= values[i]) {
 			year -= values[i];
-			strcat(roman, romanNumerals[i]);
+			strcat_s(roman,30, romanNumerals[i]);
 		}
 		i++;
 	}
@@ -1238,14 +1240,535 @@ int C9_Fh() {
 	return 0;
 }
 
-void C9_Fi() {
 
+int C9_Fi() {
+	char names[10][100];
+	int count = 0;
+
+	// 从用户那里获取姓名
+	char ch = ' ';
+	scanf_s("%c", &ch);
+	// 输出结果
+	for (int i = 0; i < 10; i++) {
+		printf("请输入名字\n");
+		
+		gets(names[i]);
+		printf("名字缩写后为:");
+		printf("%c ", names[i][0]);
+		for (int j = 0; j < 100; j++) {
+			if (names[i][j] == ' ') {
+				int flag = 0;
+				for (int k = j + 1; k < 100; k++) {
+					if (names[i][k] == ' ') {
+						flag = 1;
+					}
+				}
+				if (flag == 1) {
+					printf("%c ", names[i][j+1]);
+				}
+				else {
+					for (int k = j + 1; k < 100; k++) {
+						if (names[i][k] != ' ' && ((names[i][k] < 'A') || (names[i][k] > 'z') || (names[i][k] < 'a' && names[i][k]>'Z'))) {
+							break;
+						}
+						printf("%c", names[i][k]);
+					}
+					
+				}
+			}
+		}
+		printf("\n");
+	}
+	return 0;
 }
+
+#define MAX_BOOKS 100
+
+typedef struct {
+	int accession_number;
+	char title[50];
+	char author[50];
+	float price;
+	int is_issued;
+} Library;
+
+Library books[MAX_BOOKS];
+int total_books = 0;
+
+// Function declarations
+void addBook();
+void displayBook(int index);
+void listBooksByAuthor(char* author);
+void listTitle(char* title);
+void countBooks();
+void listBooksByAccessionNumber();
+void exitProgram();
+
+// Menu display function
+void displayMenu() {
+	printf("\nLibrary Management System\n");
+	printf("1. Add book information\n");
+	printf("2. Display book information\n");
+	printf("3. List all books of a given author\n");
+	printf("4. List the title of a specified book\n");
+	printf("5. List the count of books in the library\n");
+	printf("6. List the books in the order of accession number\n");
+	printf("7. Exit\n");
+	printf("Enter your choice: ");
+}
+
+// Main function
+int C10_f() {
+	int choice;
+	while (1) {
+		displayMenu();
+		scanf_s("%d", &choice);
+		switch (choice) {
+		case 1:
+			addBook();
+			break;
+		case 2:
+			printf("Enter the index of the book to display: ");
+			int index;
+			scanf_s("%d", &index);
+			displayBook(index - 1); // Adjust for 0-based index
+			break;
+		case 3:
+			printf("Enter the author's name: ");
+			char author[50];
+			char c = ' ';
+			scanf_s("%c", &c);
+			gets(author);
+			listBooksByAuthor(author);
+			break;
+		case 4:
+			printf("Enter the title of the book: ");
+			char title[50];
+			scanf_s("%c", &c);
+			gets(title);
+			listTitle(title);
+			break;
+		case 5:
+			countBooks();
+			break;
+		case 6:
+			listBooksByAccessionNumber();
+			break;
+		case 7:
+			exitProgram();
+			return 0;
+		default:
+			printf("Invalid choice. Please try again.\n");
+		}
+	}
+	return 0;
+}
+
+// Function definitions
+void addBook() {
+	if (total_books >= MAX_BOOKS) {
+		printf("Library is full. Cannot add more books.\n");
+		return;
+	}
+	Library newBook;
+	printf("Enter accession number: \n");
+	scanf_s("%d", &newBook.accession_number);
+	printf("Enter title:\n");
+	char c = ' ';
+	scanf_s("%c", &c);
+	gets(newBook.title);
+	//scanf_s("%s", newBook.title);
+	printf("Enter author: \n");
+	gets(newBook.author);
+	//scanf_s("%s", newBook.author);
+	printf("Enter price: \n");
+	scanf_s("%f", &newBook.price);
+	newBook.is_issued = 0; // Initially, the book is not issued
+	books[total_books++] = newBook;
+	printf("Book added successfully.\n");
+}
+
+void displayBook(int index) {
+	if (index < 0 || index >= total_books) {
+		printf("Invalid book index.\n");
+		return;
+	}
+	Library book = books[index];
+	printf("Book Information:\n");
+	printf("Accession Number: %d\n", book.accession_number);
+	printf("Title: %s\n", book.title);
+	printf("Author: %s\n", book.author);
+	printf("Price: %.2f\n", book.price);
+	printf("Issued: %s\n", book.is_issued ? "Yes" : "No");
+}
+
+void listBooksByAuthor(char* author) {
+	int count = 0;
+	for (int i = 0; i < total_books; i++) {
+		if (strcmp(books[i].author, author) == 0) {
+			printf("%d. %s by %s\n", ++count, books[i].title, books[i].author);
+		}
+	}
+	if (count == 0) {
+		printf("No books found by this author.\n");
+	}
+}
+
+void listTitle(char* title) {
+	for (int i = 0; i < total_books; i++) {
+		if (strcmp(books[i].title, title) == 0) {
+			printf("Book found: %s by %s\n", books[i].title, books[i].author);
+			return;
+		}
+	}
+	printf("Book not found.\n");
+}
+
+void countBooks() {
+	printf("Total number of books in the library: %d\n", total_books);
+}
+
+void listBooksByAccessionNumber() {
+	for (int i = 0; i < total_books; i++) {
+		printf("%d. %s by %s\n", books[i].accession_number, books[i].title, books[i].author);
+	}
+}
+
+void exitProgram() {
+	printf("Exiting the program. Thank you for using the Library Management System.\n");
+}
+
+typedef struct {
+	int day;
+	int month;
+	int year;
+} Date;
+
+// Function to compare two dates
+bool compareDates(Date date1, Date date2) {
+	return (date1.day == date2.day && date1.month == date2.month && date1.year == date2.year);
+}
+
+// Function to print the result of the comparison
+void printComparisonResult(bool areEqual) {
+	if (areEqual) {
+		printf("Equal\n");
+	}
+	else {
+		printf("Unequal\n");
+	}
+}
+
+// Main function
+int C10_g() {
+	// Declare two dates
+	Date date1, date2;
+
+	// Input the first date
+	printf("Enter the first date (day month year): ");
+	scanf_s("%d %d %d", &date1.day, &date1.month, &date1.year);
+
+	// Input the second date
+	printf("Enter the second date (day month year): ");
+	scanf_s("%d %d %d", &date2.day, &date2.month, &date2.year);
+
+	// Compare the dates
+	bool areEqual = compareDates(date1, date2);
+
+	// Print the result
+	printComparisonResult(areEqual);
+
+	return 0;
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the node structure
+typedef struct Node {
+	int data;
+	struct Node* next;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+	Node* newNode = (Node*)malloc(sizeof(Node));
+	if (newNode == NULL) {
+		printf("Memory allocation failed.\n");
+		exit(1);
+	}
+	newNode->data = data;
+	newNode->next = NULL;
+	return newNode;
+}
+
+// Function to add a node at the beginning of the list
+void addNodeAtBeginning(Node** head, int data) {
+	Node* newNode = createNode(data);
+	newNode->next = *head;
+	*head = newNode;
+}
+
+// Function to add a node at the end of the list
+void addNodeAtEnd(Node** head, int data) {
+	Node* newNode = createNode(data);
+	if (*head == NULL) {
+		*head = newNode;
+		return;
+	}
+	Node* current = *head;
+	while (current->next != NULL) {
+		current = current->next;
+	}
+	current->next = newNode;
+}
+
+// Function to add a node at a specific position in the list
+void addNodeAtMiddle(Node** head, int data, int position) {
+	Node* newNode = createNode(data);
+	if (position == 1) {
+		addNodeAtBeginning(head, data);
+		return;
+	}
+	Node* current = *head;
+	for (int i = 1; i < position - 1 && current != NULL; i++) {
+		current = current->next;
+	}
+	if (current == NULL) {
+		printf("Position out of bounds.\n");
+		return;
+	}
+	newNode->next = current->next;
+	current->next = newNode;
+}
+
+// Function to display the linked list
+void display(Node* head) {
+	Node* current = head;
+	while (current != NULL) {
+		printf("%d -> ", current->data);
+		current = current->next;
+	}
+	printf("NULL\n");
+}
+
+// Main function
+int C10_h() {
+	Node* head = NULL;
+
+	// Adding nodes at the beginning
+	printf("在链表头添加10\n");
+	addNodeAtBeginning(&head, 10);
+	display(head);
+	printf("在链表头添加20\n");
+	addNodeAtBeginning(&head, 20);
+	display(head);
+
+	// Adding nodes at the end
+	printf("在链表尾添加30\n");
+	addNodeAtEnd(&head, 30);
+	display(head);
+	printf("在链表尾添加40\n");
+	addNodeAtEnd(&head, 40);
+	display(head);
+
+	// Adding nodes in the middle
+	printf("在链表1位置添加25\n");
+	addNodeAtMiddle(&head, 25, 2); // Add 25 at position 2
+	display(head);
+
+	// Clean up memory
+	while (head != NULL) {
+		Node* temp = head;
+		head = head->next;
+		free(temp);
+	}
+
+	return 0;
+}
+
+// Define the stack structure
+typedef struct {
+	Node* top;
+} Stack;
+
+// Function to create a new node
+
+// Initialize the stack
+void initStack(Stack* stack) {
+	stack->top = NULL;
+}
+
+// Check if the stack is empty
+int isEmpty(Stack* stack) {
+	return stack->top == NULL;
+}
+
+// Push a new element onto the stack
+void push(Stack* stack, int data) {
+	Node* newNode = createNode(data);
+	newNode->next = stack->top;
+	stack->top = newNode;
+}
+
+// Pop an element from the stack
+int pop(Stack* stack) {
+	if (isEmpty(stack)) {
+		printf("Stack is empty. Cannot pop.\n");
+		return -1;
+	}
+	Node* temp = stack->top;
+	int poppedData = temp->data;
+	stack->top = temp->next;
+	free(temp);
+	return poppedData;
+}
+
+// Peek the top element of the stack
+int peek(Stack* stack) {
+	if (isEmpty(stack)) {
+		printf("Stack is empty. Cannot peek.\n");
+		return -1;
+	}
+	return stack->top->data;
+}
+
+// Display the stack
+void displayStack(Stack* stack) {
+	Node* current = stack->top;
+	while (current != NULL) {
+		printf("%d <- ", current->data);
+		current = current->next;
+	}
+	printf("NULL\n");
+}
+
+// Main function
+int C10_i() {
+	Stack stack;
+	initStack(&stack);
+
+	// Demonstrate stack operations
+	printf("10入栈\n");
+	push(&stack, 10);
+	displayStack(&stack);
+	printf("20入栈\n");
+	push(&stack, 20);
+	displayStack(&stack);
+	printf("30入栈\n");
+	push(&stack, 30);
+	displayStack(&stack);
+
+	printf("Top element is: %d\n", peek(&stack));
+
+	printf("Popped element: %d\n", pop(&stack));
+	displayStack(&stack);
+
+	printf("Popped element: %d\n", pop(&stack));
+	displayStack(&stack);
+
+	// Clean up memory
+	while (!isEmpty(&stack)) {
+		pop(&stack);
+	}
+
+	return 0;
+}
+
+
+typedef struct {
+	Node* front; // Points to the front of the queue
+	Node* rear;  // Points to the rear of the queue
+} Queue;
+
+// Initialize the queue
+void initQueue(Queue* queue) {
+	queue->front = NULL;
+	queue->rear = NULL;
+}
+
+// Check if the queue is empty
+int isEmptyQ(Queue* queue) {
+	return queue->front == NULL;
+}
+
+// Add a new element to the rear of the queue
+void enqueue(Queue* queue, int data) {
+	Node* newNode = createNode(data);
+	if (isEmptyQ(queue)) {
+		queue->front = newNode;
+		queue->rear = newNode;
+	}
+	else {
+		queue->rear->next = newNode;
+		queue->rear = newNode;
+	}
+}
+
+// Delete an element from the front of the queue
+int dequeue(Queue* queue) {
+	if (isEmptyQ(queue)) {
+		printf("Queue is empty. Cannot dequeue.\n");
+		return -1;
+	}
+	Node* temp = queue->front;
+	int dequeuedData = temp->data;
+	queue->front = temp->next;
+	if (queue->front == NULL) {
+		queue->rear = NULL;
+	}
+	free(temp);
+	return dequeuedData;
+}
+
+// Display the queue
+void displayQueue(Queue* queue) {
+	Node* current = queue->front;
+	printf("Queue: ");
+	printf("NULL");
+	while (current != NULL) {
+		printf("<- %d ", current->data);
+		current = current->next;
+	}
+	printf("\n");
+	
+}
+
+// Main function
+int C10_j() {
+	Queue queue;
+	initQueue(&queue);
+
+	// Demonstrate queue operations
+	printf("10入队\n");
+	enqueue(&queue, 10);
+	displayQueue(&queue);
+	printf("20入队\n");
+	enqueue(&queue, 20);
+	displayQueue(&queue);
+	printf("30入队\n");
+	enqueue(&queue, 30);
+	displayQueue(&queue);
+
+	printf("首元素出队: %d\n", dequeue(&queue));
+	displayQueue(&queue);
+
+	printf("首元素出队: %d\n", dequeue(&queue));
+	displayQueue(&queue);
+
+	// Clean up memory
+	while (!isEmpty(&queue)) {
+		dequeue(&queue);
+	}
+
+	return 0;
+}
+
 
 void main(){
 	int chapter = 0;
 	while (1) {
-		printf("请输入要查看的章节（2,3,4,5,8,9）,若要退出请选择0\n");
+		printf("请输入要查看的章节（2,3,4,5,8,9,10）,若要退出请选择0\n");
 		scanf_s("%d", &chapter);
 		char ch = ' ';
 		if (chapter == 0) {
@@ -1593,9 +2116,39 @@ void main(){
 					}
 				}
 			}
-
-
+		}
+		else if (chapter == 10) {
+			while (1) {
+				printf("已选择第十章，请选择题号（f,g,h,i,j),退出请输入0\n");
+				scanf_s(" %c", &ch);
+				if (ch == '0') {
+					break;
+				}
+				else if (ch == 'f') {
+					printf("已选择题f\n");
+					C10_f();
+				}
+				else if (ch == 'g') {
+					printf("已选择题g\n");
+					C10_g();
+				}
+				else if (ch == 'h') {
+					printf("已选择题h\n");
+					C10_h();
+				}
+				else if (ch == 'i') {
+					printf("已选择题i\n");
+					C10_i();
+				}
+				else if (ch == 'j') {
+					printf("已选择题j\n");
+					C10_j();
+				}
+				else {
+					printf("非法输入，请重试\n");
+				}
 			}
+		}
 		else {
 			printf("非法输入，请重试\n");
 		}

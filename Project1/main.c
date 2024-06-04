@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <conio.h>
 
 void C2_b() {
 	char ch;
@@ -1765,6 +1766,111 @@ int C10_j() {
 }
 
 
+#define SCREEN_WIDTH 80
+#define SCREEN_HEIGHT 24
+#define BOX_TOP 1
+#define BOX_BOTTOM 23
+//
+//void drawBox(int top, int bottom) {
+//	int i;
+//	// Draw top of the box
+//	for (i = 0; i < SCREEN_WIDTH; i++) {
+//		printf("%c", (i == 0 || i == SCREEN_WIDTH - 1) ? '+' : '-');
+//	}
+//	printf("\n");
+//
+//	// Draw middle of the box
+//	for (i = 0; i < bottom - top - 1; i++) {
+//		printf("%c", (i == 0) ? '|' : ' ');
+//	}
+//	printf("\n");
+//
+//	// Draw bottom of the box
+//	for (i = 0; i < SCREEN_WIDTH; i++) {
+//		printf("%c", (i == 0 || i == SCREEN_WIDTH - 1) ? '+' : '-');
+//	}
+//	printf("\n");
+//}
+//
+//void displayFileContents(FILE* file, int pageNumber) {
+//	int ch, i;
+//	for (i = 0; i < SCREEN_HEIGHT - 3; i++) {
+//		while ((ch = fgetc(file)) != EOF) {
+//			printf("%c", ch);
+//			if (fgetc(file) == '\n') break;
+//		}
+//		if (ch == EOF) break;
+//		printf("\n");
+//	}
+//	printf("%d", pageNumber);
+//	printf("Press any key to continue...");
+//}
+
+int C12_g() {
+//	FILE* file;
+//	int pageNumber = 1;
+//	char argv[100] = "E:\someDocuments\pdf\est.txt";
+//
+//	file = fopen_s(file,argv[1], "r");
+//	if (file == NULL) {
+//		perror("Error opening file");
+//		return 1;
+//	}
+//
+//	drawBox(BOX_TOP, BOX_BOTTOM);
+//	printf("%s - Page %d\n", argv[1], pageNumber);
+//
+//	while (!feof(file)) {
+//		displayFileContents(file, pageNumber);
+//		pageNumber++;
+//		if (_getch() != '\0') {
+//			clearScreen(); // You need to implement this function or use a library
+//			drawBox(BOX_TOP, BOX_BOTTOM);
+//			printf("%s - Page %d\n", argv[1], pageNumber);
+//		}
+//	}
+//
+//	fclose(file);
+//	return 0;
+}
+
+void C12_h() {
+	printf("请输入密码\n");
+	char c = ' ';
+	char arr[100];
+	scanf_s("%c", &c);
+	gets(arr);
+	printf("请选择加密方式（1：offset cipher,2:substitution cipher)\n");
+	int a = 0;
+	scanf_s("%d", &a);
+	while (1) {
+		if (a == 1) {
+			for (int i = 0; i < 100; i++) {
+				if (arr[i] == 'A') {
+					arr[i] = 128;
+				}
+			}
+			break;
+		}
+		else if (a == 2) {
+			for (int i = 0; i < 100; i++) {
+				if (arr[i] == 'A') {
+					arr[i] = '!';
+				}
+				else if (arr[i] == 'B') {
+					arr[i] = '5';
+				}
+			}
+			break;
+		}
+		else {
+			printf("非法输入，请重试");
+		}
+	}
+	printf("%s", arr);
+}
+
+
 void main(){
 	int chapter = 0;
 	while (1) {
@@ -2149,6 +2255,26 @@ void main(){
 				}
 			}
 		}
+		else if (chapter == 12) {
+			while (1) {
+				printf("已选择第十二章，请选择题号（g,h),退出请输入0\n");
+				scanf_s(" %c", &ch);
+				if (ch == '0') {
+					break;
+				}
+				else if (ch == 'g') {
+					printf("已选择题g\n");
+					C12_g();
+				}
+				else if (ch == 'h') {
+					printf("已选择题h\n");
+					C12_h();
+				}
+				else {
+					printf("非法输入，请重试\n");
+				}
+			}
+			}
 		else {
 			printf("非法输入，请重试\n");
 		}

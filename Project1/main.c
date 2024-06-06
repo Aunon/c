@@ -4,6 +4,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include <conio.h>
+#include <errno.h>
+#include <locale.h>
+#include <io.h>
+#include <fcntl.h>
 
 void C2_b() {
 	char ch;
@@ -1191,11 +1195,24 @@ void C9_Ff() {
 			print_calendar(month, year);
 		}
 		else if (c == 'a') {
-			month++;
+			if (month < 12) {
+				month++;
+			}
+			else {
+				month = 1;
+				year++;
+			}
 			print_calendar(month, year);
 		}
 		else if (c == 'd') {
-			month--;
+			if (month == 1) {
+				year--;
+				month = 12;
+			}
+			else {
+				month--;
+			}
+			
 			print_calendar(month, year);
 		}
 		else {
@@ -1229,14 +1246,21 @@ int C9_Fh() {
 		if (text[i] == 't') {
 			if (i < 1000 - 3) {
 				if (text[i + 1] == 'h' && text[i + 2] == 'e') {
-					sum++;
+					i += 2;
+					continue;
 				}
 			}
 		}
+		if ((text[i] >= 'a'&&text[i]<='z' )||( text[i]>='A'&&text[i]<='Z')) {
+			printf("%c", text[i]);
+		}
+		else {
+			break;
+		}
+		
 	}
+	printf("\n");
 
-	// 输出结果
-	printf("The word '%s' appears %d times in the text.\n", word, sum);
 
 	return 0;
 }
@@ -1765,100 +1789,222 @@ int C10_j() {
 	return 0;
 }
 
+char* xgets(char* str) {
+	if (str == NULL) {
+		return NULL;
+	}
+	printf("Enter a string: ");
+	return fgets(str, 256, stdin); // 使用fgets读取字符串，包括空字符'\n'
+}
+
+// 自定义xputs函数，模仿puts函数
+int xputs(const char* str) {
+	if (str == NULL) {
+		puts("(null)"); // 如果str为NULL，打印"(null)"
+		return -1;
+	}
+	return puts(str); // 使用puts打印字符串，并返回puts的返回值
+}
+
+int C11_a() {
+	char buffer[256];
+	char c = ' ';
+	scanf_s("%c", &c);
+	// 使用xgets读取字符串
+	char* result = xgets(buffer);
+	if (result) {
+		printf("Read: %s", result);
+	}
+
+	// 使用xputs打印字符串
+	int status = xputs(buffer);
+	printf("xputs returned: %d\n", status);
+
+	return 0;
+}
+
+int getint() {
+	char buffer[256];
+	int num = 0;
+	int i = 0;
+
+	// 清空缓冲区
+	while ((getchar()) != '\n');
+	printf("Enter an integer: ");
+
+	// 读取一行输入
+	if (fgets(buffer, sizeof(buffer), stdin)) {
+		// 将字符串转换为整数
+		while (buffer[i] != '\n' && buffer[i] != '\0') {
+			if (buffer[i] >= '0' && buffer[i] <= '9') {
+				num = num * 10 + (buffer[i] - '0');
+			}
+			else {
+				// 输入包含非数字字符
+				printf("Error: Invalid input.\n");
+				return -1; // 返回-1表示错误
+			}
+			i++;
+		}
+	}
+	else {
+		// 读取失败
+		printf("Error: Failed to read input.\n");
+		return -1; // 返回-1表示错误
+	}
+
+	return num;
+}
+
+int C11_b() {
+	int a;
+	a = getint(); // 使用getint()函数
+	if (a != -1) {
+		printf("You entered %d\n", a);
+	}
+
+	return 0;
+}
+
 
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 24
 #define BOX_TOP 1
 #define BOX_BOTTOM 23
-//
-//void drawBox(int top, int bottom) {
-//	int i;
-//	// Draw top of the box
-//	for (i = 0; i < SCREEN_WIDTH; i++) {
-//		printf("%c", (i == 0 || i == SCREEN_WIDTH - 1) ? '+' : '-');
-//	}
-//	printf("\n");
-//
-//	// Draw middle of the box
-//	for (i = 0; i < bottom - top - 1; i++) {
-//		printf("%c", (i == 0) ? '|' : ' ');
-//	}
-//	printf("\n");
-//
-//	// Draw bottom of the box
-//	for (i = 0; i < SCREEN_WIDTH; i++) {
-//		printf("%c", (i == 0 || i == SCREEN_WIDTH - 1) ? '+' : '-');
-//	}
-//	printf("\n");
-//}
-//
-//void displayFileContents(FILE* file, int pageNumber) {
-//	int ch, i;
-//	for (i = 0; i < SCREEN_HEIGHT - 3; i++) {
-//		while ((ch = fgetc(file)) != EOF) {
-//			printf("%c", ch);
-//			if (fgetc(file) == '\n') break;
-//		}
-//		if (ch == EOF) break;
-//		printf("\n");
-//	}
-//	printf("%d", pageNumber);
-//	printf("Press any key to continue...");
-//}
+
+void drawBox(int top, int bottom) {
+	int i;
+	// Draw top of the box
+	for (i = 0; i < SCREEN_WIDTH; i++) {
+		printf("%c", (i == 0 || i == SCREEN_WIDTH - 1) ? '+' : '-');
+	}
+	printf("\n");
+
+	// Draw middle of the box
+	for (i = 0; i < bottom - top - 1; i++) {
+		printf("%c", (i == 0) ? '|' : ' ');
+	}
+	printf("\n");
+
+	// Draw bottom of the box
+	for (i = 0; i < SCREEN_WIDTH; i++) {
+		printf("%c", (i == 0 || i == SCREEN_WIDTH - 1) ? '+' : '-');
+	}
+	printf("\n");
+}
+
+#define SCREEN_WIDTH 80
+#define SCREEN_HEIGHT 22
 
 int C12_g() {
-//	FILE* file;
-//	int pageNumber = 1;
-//	char argv[100] = "E:\someDocuments\pdf\est.txt";
-//
-//	file = fopen_s(file,argv[1], "r");
-//	if (file == NULL) {
-//		perror("Error opening file");
-//		return 1;
-//	}
-//
-//	drawBox(BOX_TOP, BOX_BOTTOM);
-//	printf("%s - Page %d\n", argv[1], pageNumber);
-//
-//	while (!feof(file)) {
-//		displayFileContents(file, pageNumber);
-//		pageNumber++;
-//		if (_getch() != '\0') {
-//			clearScreen(); // You need to implement this function or use a library
-//			drawBox(BOX_TOP, BOX_BOTTOM);
-//			printf("%s - Page %d\n", argv[1], pageNumber);
-//		}
-//	}
-//
-//	fclose(file);
-//	return 0;
+	FILE* fp;
+	errno_t err;
+	printf("请输入文件路径名（请使用\\避免转义字符；文件中不能包含中文字符，否则出现乱码）：\n");
+	char filename[256]; // 你想要打开的文件名
+	char c = ' ';
+	scanf_s("%c", &c);
+	gets(filename);
+	char buffer[SCREEN_WIDTH + 1]; // 缓冲区，用于存储一行文本
+	int page = 1; // 页码
+	int ch;
+	// 设置程序的区域设置为中文
+	setlocale(LC_ALL, "chs");
+
+
+
+	// 打开文件用于读取
+	err = fopen_s(&fp, filename, "r");
+	if (err != 0) {
+		perror("Error opening file");
+		return 1;
+	}
+
+	// 显示文件名和页码
+	printf("%s - Page %d\n", filename, page);
+
+
+	// 读取并显示文件内容
+	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+		printf("%s", buffer); // 显示一行
+	}
+
+	// 关闭文件
+	fclose(fp);
+
+	// 显示提示信息
+	//printf("Press any key to continue...\n");
+
+	//ch = getchar(); // 等待用户输入
+
+	// 这里可以添加代码来处理分页显示和循环显示多页内容
+	// 但由于标准C库不支持屏幕控制，这需要特定的库或API
+
+	return 0;
 }
 
 void C12_h() {
-	printf("请输入密码\n");
+	FILE* fp;
+	errno_t err;
+	printf("请输入文件路径名（请使用\\避免转义字符）：\n");
+
+	char filename[256] ; // 你想要打开的文件名
 	char c = ' ';
-	char arr[100];
 	scanf_s("%c", &c);
-	gets(arr);
+	gets(filename);
+	char buffer[256];
+
+	// 打开文件用于写入
+	/*err = fopen_s(&fp, filename, "w");
+	if (err != 0) {
+		perror("Error opening file");
+		return 1;
+	}*/
+
+	// 写入一些文本到文件
+	//fputs("Hello, this is a test file.\n", fp);
+	//fputs("Writing to the file using fopen_s.\n", fp);
+
+	// 关闭文件
+	//fclose(fp);
+
+	// 重新打开文件用于读取
+	err = fopen_s(&fp, filename, "r");
+	if (err != 0) {
+		perror("Error opening file");
+		return 1;
+	}
+
+	// 从文件中读取内容
+	while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+		
+	}
+
+	// 关闭文件
+	fclose(fp);
+
+
 	printf("请选择加密方式（1：offset cipher,2:substitution cipher)\n");
 	int a = 0;
 	scanf_s("%d", &a);
 	while (1) {
 		if (a == 1) {
+			int noff = 0;
+			printf("请输入偏移量:\n");
+			scanf_s("%d", &noff);
 			for (int i = 0; i < 100; i++) {
-				if (arr[i] == 'A') {
-					arr[i] = 128;
+				if (buffer[i] >= 'A' && buffer[i]<='Z') {
+					buffer[i]+= noff;
 				}
 			}
 			break;
 		}
 		else if (a == 2) {
 			for (int i = 0; i < 100; i++) {
-				if (arr[i] == 'A') {
-					arr[i] = '!';
+				if (buffer[i] == 'A') {
+					buffer[i] = '!';
 				}
-				else if (arr[i] == 'B') {
-					arr[i] = '5';
+				else if (buffer[i] == 'B') {
+					buffer[i] = '5';
 				}
 			}
 			break;
@@ -1867,14 +2013,14 @@ void C12_h() {
 			printf("非法输入，请重试");
 		}
 	}
-	printf("%s", arr);
+	printf("%s", buffer);
 }
 
 
 void main(){
 	int chapter = 0;
 	while (1) {
-		printf("请输入要查看的章节（2,3,4,5,8,9,10）,若要退出请选择0\n");
+		printf("请输入要查看的章节（2,3,4,5,8,9,10,11,12）,若要退出请选择0\n");
 		scanf_s("%d", &chapter);
 		char ch = ' ';
 		if (chapter == 0) {
@@ -2255,6 +2401,26 @@ void main(){
 				}
 			}
 		}
+		else if (chapter == 11) {
+			while (1) {
+				printf("已选择第十一章，请选择题号（a,b),退出请输入0\n");
+				scanf_s(" %c", &ch);
+				if (ch == '0') {
+					break;
+				}
+				else if (ch == 'a') {
+					printf("已选择题a\n");
+					C11_a();
+				}
+				else if (ch == 'b') {
+					printf("已选择题b\n");
+					C11_b();
+				}
+				else {
+					printf("非法输入，请重试\n");
+				}
+			}
+			}
 		else if (chapter == 12) {
 			while (1) {
 				printf("已选择第十二章，请选择题号（g,h),退出请输入0\n");
@@ -2274,7 +2440,7 @@ void main(){
 					printf("非法输入，请重试\n");
 				}
 			}
-			}
+		}
 		else {
 			printf("非法输入，请重试\n");
 		}
